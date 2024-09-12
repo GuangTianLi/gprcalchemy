@@ -10,44 +10,13 @@ on:
     branches: [ master ]
 
 jobs:
-  ubuntu-build:
+  build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: [3.8, 3.9, "3.10", 3.11, 3.12]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install codecov black==20.8b1 mypy coverage
-        pip install .
-    - name: Lint
-      run: |
-        make lint
-    - name: Test with coverage
-      run: |
-        coverage run -m unittest discover tests/
-        coverage report -m
-        coverage html -i
-    - name: report coverage
-      env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: |
-        codecov
-
-  windows-build:
-
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: [3.8, 3.9, "3.10", 3.11, 3.12]
+        os: [ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v2
